@@ -133,35 +133,7 @@ func returnServiceDetails(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-/*
-
-// Handler that expects id to be a query parameter
-// e.g. /service_detail?id=1
-
-func returnServiceDetails(w http.ResponseWriter, r *http.Request) {
-	log.Println("returnServiceDetails requested")
-	w.Header().Set("Content-Type", "application/json")
-
-	id := r.URL.Query().Get("id")
-	log.Println("returnServiceDetails request for id: ", id)
-
-	var foundService Service
-	for _, service := range services.Services {
-		if service.ID == id {
-			foundService = service
-		}
-	}
-	if foundService != (Service{}) {
-		json.NewEncoder(w).Encode(foundService)
-		w.WriteHeader(http.StatusOK)
-	} else {
-		// invalid id
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(`{"message": "not found"}`))
-	}
-}
-*/
-
+// Handle routing of requests
 func handleRequests() {
 	http.HandleFunc("/services", returnServices)
 	http.HandleFunc("/service_detail/", returnServiceDetails)
