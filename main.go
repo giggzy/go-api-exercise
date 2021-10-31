@@ -29,6 +29,7 @@ var services Services
 
 func returnServices(w http.ResponseWriter, r *http.Request) {
 	log.Println("returnServices requested")
+	w.Header().Set("Content-Type", "application/json")
 
 	// Optional query string parameters
 	search := r.URL.Query().Get("search")
@@ -74,13 +75,16 @@ func returnServices(w http.ResponseWriter, r *http.Request) {
 	if end > len(foundServices) {
 		end = len(foundServices)
 	}
-	if start >= len(foundServices) {
-		// invalid page
-		// not sure how to handle this
-		w.WriteHeader(http.StatusNotFound)
-	}
 
 	// Need some bounds checking here
+	if start >= len(foundServices) {
+		// invalid page
+		log.Println("Invalid page requested: ", page)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(`{"message": "Invalid page requested: ` + page + `"}`))
+		return
+	}
+
 	foundServices = foundServices[start:end]
 	// Should I add page and pageSize to the response?
 	//meta := `json: {"page": ` + page + `, "pageSize": ` + pageSize + `}`
