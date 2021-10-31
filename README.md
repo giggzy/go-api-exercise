@@ -1,4 +1,20 @@
-## Initial Thoughts
+# Introduction
+An implementation an API of the specification the drive a UI for engaging with services of an organization.
+
+## TODO
+  - decompose into modules/files, handlers, util, routes
+    - routes is so simple that it seems overkill
+    - handlers are getting fat so maybe
+  - cross cutting concerns are leading to code duplication, DRY
+    - missing decorators, but can achieve same with wrapping functions inside functions, worry about readability and community conventions
+  - Stuck on "merging" structs into a JSON, would like a meta block to help frontend dev and myself in development loop
+  - CRUD
+    - would like to at least implement "update"
+      - with file based persistence locking is my responsiblity, see some approaches online but not confident
+      - when to persist?
+        - on every mutation? on server shutdown? Lean towards every mutation
+
+## Initial Thoughts (Historical)
 
 - Use built-in web server
 - Don't use another framework unless it gets messy
