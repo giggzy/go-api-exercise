@@ -32,6 +32,9 @@ func returnServices(w http.ResponseWriter, r *http.Request) {
 	log.Println("returnServices requested")
 	w.Header().Set("Content-Type", "application/json")
 
+	// When running as a test services are not yet initialized
+	services = loadServices()
+
 	// Optional query string parameters
 	search := r.URL.Query().Get("search")
 	page := r.URL.Query().Get("page")
@@ -108,6 +111,9 @@ func returnServiceDetails(w http.ResponseWriter, r *http.Request) {
 	log.Println("returnServiceDetails requested")
 	w.Header().Set("Content-Type", "application/json")
 
+	// When running as a test services are not yet initialized
+	services = loadServices()
+
 	id := strings.TrimPrefix(r.URL.Path, "/service_detail/")
 	log.Println("returnServiceDetails request for id2: ", id)
 
@@ -166,17 +172,7 @@ func handleRequests() {
 ///////////////////////////////////////////////////////////////////////////////
 
 func main() {
-	// read the file and unmarshal the json into the services struct
-	content, err := readDBFile("./data/sample.json")
-	if err != nil {
-		log.Println(err)
-	}
-	//var payload Services
-	err = json.Unmarshal([]byte(content), &services)
-	if err != nil {
-		log.Fatal("Error unmarshalling services JSON: ", err)
-	}
-	log.Println("Read in services: ", len(services.Services))
+	services = loadServices() // loadServices() handles error checking
 
 	// start the server
 	handleRequests()
@@ -187,6 +183,28 @@ func main() {
 ///////////////////////////////////////////////////////////////////////////////
 // utility functions
 ///////////////////////////////////////////////////////////////////////////////
+
+// Load services from a file
+func loadServices() Services {
+	if services.Services != nil {
+		// services = loadServices()
+		return services
+	}
+	// read the file and unmarshal the json into the services struct
+	var services Services
+	content, err := readDBFile("./data/sample.json")
+	if err != nil {
+		log.Fatal("Error reading file: ", err)
+		return services
+	}
+	err = json.Unmarshal([]byte(content), &services)
+	if err != nil {
+		log.Fatal("Error unmarshalling services JSON: ", err)
+		return services
+	}
+	log.Println("Read in services, count: ", len(services.Services))
+	return services
+}
 
 // read a file and return the content
 func readDBFile(fileName string) (string, error) {
