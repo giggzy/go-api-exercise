@@ -17,6 +17,7 @@ type Service struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	VersionCount int    `json:"versionCount"`
+	URL          string `json:"url"`
 }
 
 type Meta struct {
