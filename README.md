@@ -40,18 +40,32 @@ Thinking requests are GETs with path and query string driving.
 
 ```json
 {
-    "services": {
-        "serviceA": {
-            "name": "NameA",
-            "desc": "blah, blah, blah",
-            "version_count": 5
+    "services": [
+        {
+            "url": "https://example.com/a_Service",
+            "versionCount": 1,
+            "description": "a blah, blah, blah",
+            "id": "1",
+            "name": "a_Service"
+        },
+ 
+            "url": "https://example.com/b_Service", 
+            "versionCount": 2, 
+            "description": "b blah, blah, blah", 
+            "id": "2", 
+            "name": "b_Service"
+        }, 
+        {
+            "url": "https://example.com/c_Service", 
+            "versionCount": 3, 
+            "description": "c blah, blah, blah", 
+            "id": "3", 
+            "name": "c_Service"
         }
-        // and so on ...
-    }
+    ]
 }
 ```
 
-  
 ## Resources
 
 [The Spec](https://docs.google.com/document/d/1GcqaLwUv2MC7CmXs7ZCrTrfOwkSOiZHRLoWgLzTr9Vc/)
