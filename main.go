@@ -60,7 +60,7 @@ func returnServices(w http.ResponseWriter, r *http.Request) {
 		page = "0"
 	}
 	if pageSize == "" {
-		pageSize = "10"
+		pageSize = "12" // the design mock up has 12 items per page, 4 * 3
 	}
 
 	// convert the page and pageSize to ints
