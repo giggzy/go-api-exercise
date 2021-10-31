@@ -81,7 +81,7 @@ func returnServices(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Need some bounds checking here
-	if start >= len(foundServices) {
+	if start >= len(foundServices) || start < 0 {
 		// invalid page
 		log.Println("Invalid page requested: ", page)
 		w.WriteHeader(http.StatusNotFound)
