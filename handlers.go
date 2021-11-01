@@ -111,3 +111,33 @@ func getServiceDetails(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"message": "not found"}`))
 	}
 }
+
+func createService(w http.ResponseWriter, r *http.Request) {
+	log.Println("createService requested ...")
+	w.Header().Set("Content-Type", "application/json")
+
+	// When running as a test services are not yet initialized
+	services = loadServices()
+
+	decoder := json.NewDecoder(r.Body)
+	var newService Service // this is the new service to be created
+	// unmarshal the request body into the newService object
+	err2 := decoder.Decode(&newService)
+	if err2 != nil {
+		log.Println("Error unmarshalling request body: ", err2.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"message": "Error unmarshalling request body: ` + err2.Error() + `"}`))
+	}
+
+	//_, err := json.Unmarshal(r.Body.Read(), &newService)
+	//json.NewDecoder(r.Body).Decode(&newService)
+	/*
+		if err != nil {
+			log.Println("Error reading request body: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		json.Unmarshal(serviceJSON, &newService)
+	*/
+	services.Services = append(services.Services, newService)
+	writeDBFile()
+}

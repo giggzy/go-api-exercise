@@ -53,3 +53,20 @@ func Test_services_id(t *testing.T) {
 			recorder.Body.String(), contains)
 	}
 }
+
+func Test_service_create(t *testing.T) {
+
+	body := strings.NewReader(`{"name":"Test Create","description":"create","id":"234","versionCount":33,"url":"https://example.com/created_service"}`)
+	req, err := http.NewRequest("POST", "/services", body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	recorder := httptest.NewRecorder()
+	handler := http.HandlerFunc(createService)
+	handler.ServeHTTP(recorder, req)
+	if status := recorder.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+}
