@@ -14,7 +14,7 @@ func Test_services(t *testing.T) {
 	}
 
 	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(returnServices)
+	handler := http.HandlerFunc(getServives)
 	handler.ServeHTTP(recorder, req)
 	if status := recorder.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -38,7 +38,7 @@ func Test_services_id(t *testing.T) {
 	}
 
 	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(returnServiceDetails)
+	handler := http.HandlerFunc(getServiveDetails)
 	handler.ServeHTTP(recorder, req)
 	if status := recorder.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",

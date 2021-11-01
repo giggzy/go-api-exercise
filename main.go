@@ -28,8 +28,8 @@ type Meta struct {
 
 var services Services
 
-func returnServices(w http.ResponseWriter, r *http.Request) {
-	log.Println("returnServices requested")
+func getServives(w http.ResponseWriter, r *http.Request) {
+	log.Println("getServives requested")
 	w.Header().Set("Content-Type", "application/json")
 
 	// When running as a test services are not yet initialized
@@ -42,14 +42,14 @@ func returnServices(w http.ResponseWriter, r *http.Request) {
 
 	var foundServices []Service
 	if search != "" {
-		log.Println("returnServices request for search: ", search)
+		log.Println("getServives request for search: ", search)
 		for _, service := range services.Services {
 			if strings.Contains(service.Name, search) {
 				foundServices = append(foundServices, service)
 			}
 		}
 	} else {
-		log.Println("returnServices request for all services")
+		log.Println("getServives request for all services")
 		foundServices = services.Services
 	}
 
@@ -107,15 +107,15 @@ func returnServices(w http.ResponseWriter, r *http.Request) {
 
 // This uses the http.Request object to get the URL path
 // expects /service_detail/{id} as the path
-func returnServiceDetails(w http.ResponseWriter, r *http.Request) {
-	log.Println("returnServiceDetails requested")
+func getServiveDetails(w http.ResponseWriter, r *http.Request) {
+	log.Println("getServiveDetails requested")
 	w.Header().Set("Content-Type", "application/json")
 
 	// When running as a test services are not yet initialized
 	services = loadServices()
 
 	id := strings.TrimPrefix(r.URL.Path, "/service_detail/")
-	log.Println("returnServiceDetails request for id2: ", id)
+	log.Println("getServiveDetails request for id2: ", id)
 
 	var foundService Service
 	for _, service := range services.Services {
@@ -135,8 +135,8 @@ func returnServiceDetails(w http.ResponseWriter, r *http.Request) {
 
 // Handle routing of requests
 func handleRequests() {
-	http.HandleFunc("/services", returnServices)
-	http.HandleFunc("/service_detail/", returnServiceDetails)
+	http.HandleFunc("/services", getServives)
+	http.HandleFunc("/service_detail/", getServiveDetails)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
