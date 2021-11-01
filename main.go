@@ -21,6 +21,7 @@ type Service struct {
 	URL          string `json:"url"`
 }
 
+// not used yet
 type Meta struct {
 	Page     int
 	PageSize int
@@ -79,31 +80,50 @@ func main() {
 // Load services from a file
 func loadServices() Services {
 	if services.Services != nil {
-		// services = loadServices()
+		// already loaded no need to do it again
 		return services
 	}
 	// read the file and unmarshal the json into the services struct
 	var services Services
-	content, err := readDBFile("./data/sample.json")
-	if err != nil {
-		log.Fatal("Error reading file: ", err)
-		return services
-	}
-	err = json.Unmarshal([]byte(content), &services)
+	content := readDBFile()
+	err := json.Unmarshal([]byte(content), &services)
 	if err != nil {
 		log.Fatal("Error unmarshalling services JSON: ", err)
-		return services
 	}
 	log.Println("Read in services, count: ", len(services.Services))
 	return services
 }
 
 // read a file and return the content
-func readDBFile(fileName string) (string, error) {
-	// read file  fd
-	content, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return "", err
+func readDBFile() string {
+	// prefer to read in services.json but if not found use the mock data
+	sampleData := "./data/sample.json"
+	servicesData := "./data/services.json"
+
+	var content []byte
+	// Check if file exists
+	if _, err := os.Stat(servicesData); err == nil {
+		log.Println("Using services data")
+		content, err = ioutil.ReadFile(servicesData)
+		if err != nil {
+			log.Fatal("Error reading file: ", err)
+		}
+	} else {
+		// Fallback to sample data
+		log.Println("Using sample data")
+		content, err = ioutil.ReadFile(sampleData)
+		if err != nil {
+			log.Fatal("Error reading file: ", err)
+		}
 	}
-	return string(content), nil
+	return string(content)
+}
+
+func writeDBFile() {
+	// write the content to the file
+	jsonString, _ := json.Marshal(services)
+	err := ioutil.WriteFile("./data/services.json", jsonString, 0644)
+	if err != nil {
+		log.Fatal("Error writing file: ", err)
+	}
 }
