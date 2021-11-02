@@ -74,10 +74,10 @@ func getServices(w http.ResponseWriter, r *http.Request) {
 	//meta := `json: {"page": ` + page + `, "pageSize": ` + pageSize + `}`
 	//meta := Meta{Page: pageInt, PageSize: pageSizeInt}
 	//ID           string `json:"id"`
+	// Note: I don't know how to add the meta struct to the response
 
 	// Intention here was to return some meta data about the response
 	// e.g. total number of services, page number, page size, etc.
-	//foundServices = append(foundServices, meta)
 
 	// write the response
 	w.Header().Set("Content-Type", "application/json")
