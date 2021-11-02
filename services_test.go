@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -22,7 +23,8 @@ func Test_services(t *testing.T) {
 	}
 
 	// Confirm the response contains an expected substring?
-	contains := `{"id":"1","name":"a_Service","description":"a blah, blah, blah","versionCount":1,"url":"https://example.com/a_Service"}`
+	contains := `{"id":"1","name":"a_Service","description":"a blah, blah, blah","versionCount":1,"url":"https://example.com/a_Service","versions":[{"id":"0","name":"version_0"}]}`
+	//contains := `{"id":"1","name":"a_Service","description":"a blah, blah, blah","versionCount":1,"url":"https://example.com/a_Service"}`
 	if !strings.Contains(recorder.Body.String(), contains) {
 		t.Errorf("Response does not contains expected content: %v is missing %v",
 			recorder.Body.String(), contains)
@@ -47,7 +49,7 @@ func Test_services_id(t *testing.T) {
 
 	// Confirm the response has the expected data?
 	//const contains = `{ "id": "ccb5fa2c-d6da-4d68-a901-3d81682e3a2c", "name": "o_Service", "description": "o blah, blah, blah",`
-	const contains = `{"id":"2","name":"b_Service","description":"b blah, blah, blah","versionCount":2,"url":"https://example.com/b_Service"}`
+	const contains = `{"id":"2","name":"b_Service","description":"b blah, blah, blah","versionCount":2,"url":"https://example.com/b_Service","versions":[{"id":"0","name":"version_0"},{"id":"1","name":"version_1"}]}`
 	if !strings.Contains(recorder.Body.String(), contains) {
 		t.Errorf("Response does not contains expected content: %v is missing %v",
 			recorder.Body.String(), contains)
@@ -69,4 +71,13 @@ func Test_service_create(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusOK)
 	}
+}
+
+// Unit tests
+func Test_id_creation(t *testing.T) {
+	id := getRandomID()
+	if id == "" {
+		t.Errorf("ID is empty")
+	}
+	log.Printf("New ID: `%s` is the new ID.\n", id)
 }

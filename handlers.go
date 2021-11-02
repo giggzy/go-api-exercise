@@ -102,9 +102,10 @@ func getServiceDetails(w http.ResponseWriter, r *http.Request) {
 			foundService = service
 		}
 	}
-	if foundService != (Service{}) {
+	//if foundService != (Service{}) {
+	// check if the service was found
+	if foundService.ID != "" {
 		json.NewEncoder(w).Encode(foundService)
-		w.WriteHeader(http.StatusOK)
 	} else {
 		// invalid id
 		w.WriteHeader(http.StatusNotFound)
@@ -122,22 +123,23 @@ func createService(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var newService Service // this is the new service to be created
 	// unmarshal the request body into the newService object
-	err2 := decoder.Decode(&newService)
-	if err2 != nil {
-		log.Println("Error unmarshalling request body: ", err2.Error())
+	err := decoder.Decode(&newService)
+	if err != nil {
+		log.Println("Error unmarshalling request body: ", err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"message": "Error unmarshalling request body: ` + err2.Error() + `"}`))
+		w.Write([]byte(`{"message": "Error unmarshalling request body: ` + err.Error() + `"}`))
 	}
 
-	//_, err := json.Unmarshal(r.Body.Read(), &newService)
-	//json.NewDecoder(r.Body).Decode(&newService)
-	/*
-		if err != nil {
-			log.Println("Error reading request body: ", err)
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json.Unmarshal(serviceJSON, &newService)
-	*/
+	newID := getRandomID()
+	newService.ID = newID
+
+	// update the services object
+	services.Lock.Lock()
 	services.Services = append(services.Services, newService)
 	writeDBFile()
+	services.Lock.Unlock()
+
+	// return the new service
+	json.NewEncoder(w).Encode(newService)
+
 }

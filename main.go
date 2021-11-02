@@ -4,24 +4,35 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
+	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 )
 
 type Services struct {
+	Lock     sync.RWMutex
 	Services []Service `json:"services"`
 }
 type Service struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	VersionCount int    `json:"versionCount"`
-	URL          string `json:"url"`
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	VersionCount int       `json:"versionCount"`
+	URL          string    `json:"url"`
+	Versions     []Version `json:"versions"`
 }
 
-// not used yet
+type Version struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// not used yet, intention is to pass metadata on pagination to frontend
 type Meta struct {
 	Page     int
 	PageSize int
@@ -63,6 +74,7 @@ func mainX() {
 
 func main() {
 	services = loadServices() // loadServices() handles error checking
+	rand.Seed(time.Now().UnixNano())
 
 	r := mux.NewRouter()
 	r.HandleFunc("/services", getServices).Methods("GET")
@@ -70,7 +82,7 @@ func main() {
 	r.HandleFunc("/service_create", createService).Methods("POST")
 	http.Handle("/", r)
 	log.Println("Start Web Server...")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", nil)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,4 +138,12 @@ func writeDBFile() {
 	if err != nil {
 		log.Fatal("Error writing file: ", err)
 	}
+}
+
+// get random id between 1 and 1000000
+// toy case
+func getRandomID() string {
+	id := rand.Intn(1000000)
+	// convert to string
+	return strconv.Itoa(id)
 }
