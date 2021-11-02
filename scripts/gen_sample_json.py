@@ -12,10 +12,24 @@ def gen_services():
     #service_list = services["services"]
     for i in range(records_count):
         """
-        "serviceA": {
+        "   {
                 "name": "NameA",
+                "id": "2"
                 "desc": "A blah, blah, blah",
-                "version_count": 5
+                "version_count": 2
+                "url": "https://example.com/serviveA"
+                "versions": {
+                    [
+                        {
+                            "name": "version1",
+                            "id": 1,
+                        },
+                        {
+                            "name": "version2",
+                            "id": 2,
+                        }
+                    ]
+                }
             },
         """
         current = ascii_letters[i] 
@@ -24,12 +38,20 @@ def gen_services():
         version_count = i + 1
         url = "https://example.com/" + name
 
+        versions = []
+        for v in range(version_count):
+            versions.append({
+                "name": "version_" + str(v),
+                "id":   str(v)
+            })
+
         services["services"].append({ 
             "id": str(version_count),
             "name": name,
             "description": desc,
             "url": url,
-            "versionCount": version_count
+            "versionCount": version_count,
+            "versions": versions
         })
     return services
 

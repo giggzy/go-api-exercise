@@ -94,7 +94,7 @@ func getServiceDetails(w http.ResponseWriter, r *http.Request) {
 	services = loadServices()
 
 	id := strings.TrimPrefix(r.URL.Path, "/service_detail/")
-	log.Println("getServiceDetails request for id2: ", id)
+	log.Println("getServiceDetails request for id: ", id)
 
 	var foundService Service
 	for _, service := range services.Services {

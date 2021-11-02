@@ -150,3 +150,5 @@ cython_debug/
 .vscode/
 data/services.json
 take-home
+**/scratch/**
+/data/*bak
