@@ -2,6 +2,12 @@
 
 An implementation an API of the specification the drive a UI for engaging with services of an organization.
 
+Uses a sample JSON file to initialize a global services struct.
+When the struct is mutated it is serialized to disk and preferentially read on next server startup achieving persistance.
+Only create service is implemented.
+Only one organization is supported currently.
+Search on service name, sort on service name and serviceCount are supported.
+
 ## Questions and snags
 
 - Moved to mux as hit snags on POSTs using build in http lib.
