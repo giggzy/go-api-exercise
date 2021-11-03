@@ -6,6 +6,8 @@ An implementation an API of the specification the drive a UI for engaging with s
 
 - Moved to mux as hit snags on POSTs using build in http lib.
   - Don't understand some basics
+- Tried to implement multiple orgs each having a file but started getting messy
+- No AuthN or authZ due to time
 
 ## TODO
 
