@@ -13,7 +13,7 @@ func getServices(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// When running as a test services are not yet initialized
-	services = loadServices()
+	loadServices()
 
 	// Optional query string parameters
 	search := r.URL.Query().Get("search")
@@ -91,7 +91,7 @@ func getServiceDetails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// When running as a test services are not yet initialized
-	services = loadServices()
+	loadServices()
 
 	id := strings.TrimPrefix(r.URL.Path, "/service_detail/")
 	log.Println("getServiceDetails request for id: ", id)
@@ -118,7 +118,7 @@ func createService(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// When running as a test services are not yet initialized
-	services = loadServices()
+	loadServices()
 
 	decoder := json.NewDecoder(r.Body)
 	var newService Service // this is the new service to be created

@@ -14,20 +14,18 @@ import (
 ///////////////////////////////////////////////////////////////////////////////
 
 // Load services from a file
-func loadServices() Services {
+func loadServices() {
 	if services.Services != nil {
 		// already loaded no need to do it again
-		return services
+		return
 	}
 	// read the file and unmarshal the json into the services struct
-	var services Services
 	content := readDBFile()
 	err := json.Unmarshal([]byte(content), &services)
 	if err != nil {
 		log.Fatal("Error unmarshalling services JSON: ", err)
 	}
 	log.Println("Read in services, count: ", len(services.Services))
-	return services
 }
 
 // read a file and return the content
