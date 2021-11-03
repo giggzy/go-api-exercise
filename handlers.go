@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 func getServices(w http.ResponseWriter, r *http.Request) {
+	// TODO: decompose this function, getting fat.
+
 	log.Println("getServives requested")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -17,6 +20,7 @@ func getServices(w http.ResponseWriter, r *http.Request) {
 
 	// Optional query string parameters
 	search := r.URL.Query().Get("search")
+	sortField := r.URL.Query().Get("sort")
 	page := r.URL.Query().Get("page")
 	pageSize := r.URL.Query().Get("pageSize")
 
@@ -29,8 +33,38 @@ func getServices(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else {
-		log.Println("getServives request for all services")
+		log.Println("getServices request for all services")
 		foundServices = services.Services
+	}
+
+	if sortField != "" {
+		// sort the services on key passed in the query string
+		log.Println("getServices request for sort: ", sortField)
+		// valid sort keys are: name, versionCount
+		// check if the sort key is valid
+		if sortField != "name" && sortField != "versionCount" {
+			log.Println("Invalid sort key: ", sortField)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(`{"message": "Invalid sort key: ` + sortField + `"}`))
+			return
+		}
+		if sortField == "name" {
+			// sort by name ascending alphabetically, Capitalization is ignored
+			sort.Slice(
+				foundServices,
+				func(i, j int) bool {
+					return strings.ToLower(foundServices[i].Name) < strings.ToLower(foundServices[j].Name)
+				},
+			)
+		} else {
+			// sort by versionCount in descending order
+			sort.Slice(
+				foundServices,
+				func(i, j int) bool {
+					return foundServices[i].VersionCount > foundServices[j].VersionCount
+				},
+			)
+		}
 	}
 
 	// pagination
