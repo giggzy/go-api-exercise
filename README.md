@@ -2,104 +2,45 @@
 
 An implementation an API of the specification the drive a UI for engaging with services of an organization.
 
+Aimed to use a few dependencies outside of the Std Lib. I switched to mux as I was having issues with POSTs and the build in net/http
+
+## Persistence
+Using file system with one JSON file per organization for simplicity, seems a reasonable choice for the exercise. Typically would use a relational DB for this. The JSON file approach makes migration to a Document DB the easiest next step.
+On startup a sample JSON file is read and converted into a Struct called Services which is an Array of Service Struct. This is stored globally in the app. Mixed feelings around this but no better idea struct.
+I introduced on mutation, createService to the datastructure to play with Locking and flush to disk considerations.
+On mutation, the Services Array is locked and flushed to disk when mutation is complete. No locking done on reads as *I think* that is safe. My understanding is reads will block will the lock in place so potential optimazation to support read locks.
+
+# API
+Went REST as I'm most familiar with that approach and enough new concerns in play.
+Used the URL path for required parameter, e.g. id of service to get details on. Used Query Path for optional parameters, search, sort on getting services. Seems OK. I did not use mux's feature which look like it has conviences for building an API.
+Did not come up with a good documentation experience for a consumer of the API. I have an Insomnia session which perhaps I can export. I looked into swagger for goland but looked like too much effort.
+
+# Testing
+Decided to explore testing with the standard library approaches. For integration tests it  would have been more valuable to have used the same language as the consumer on second though as could act as documentation and be a better resource. For unit tests the go build in testing makes sense. 
+Only partial coverage but was useful during refactoring.
+
+# Authentication/Autherization
+Did not go down this path due to time. JWT would make sense in my opinion, it could store the orgID and userID which could drive decisions.
+Only serving one Organization services requirement was not addressed. so this impl could only work for one org.
+I was planning on using a JSON file for each organization services but would take time to sort out the initialization and flushing to disk for that approach.
+
+# Potential Next Steps
+Choosing a DB approach over file persistence.
+AuthN/AuthZ
+Supporting multi org
+Covering rest of CRUD operations.
+
+
+
+
+
+
+
 Uses a sample JSON file to initialize a global services struct.
 When the struct is mutated it is serialized to disk and preferentially read on next server startup achieving persistance.
 Only create service is implemented.
 Only one organization is supported currently.
 Search on service name, sort on service name and serviceCount are supported.
 
-## Questions and snags
 
-- Moved to mux as hit snags on POSTs using build in http lib.
-  - Don't understand some basics
-- Tried to implement multiple orgs each having a file but started getting messy
-- No AuthN or authZ due to time
 
-## TODO
-
-- decompose into modules/files, handlers, util, routes
-  - routes is so simple that it seems overkill
-  - handlers are getting fat so maybe [X]
-- cross cutting concerns are leading to code duplication, DRY
-  - missing decorators, but can achieve same with wrapping functions inside functions, worry about readability and community conventions
-- Stuck on "merging" structs into a JSON, would like a meta block to help frontend dev and myself in development loop
-- CRUD
-  - would like to at least implement "update"
-    - with file based persistence locking is my responsiblity, see some approaches online but not confident
-    - when to persist?
-      - on every mutation? on server shutdown? Lean towards every mutation
-
-## Initial Thoughts (Historical)
-
-- Use built-in web server
-- Don't use another framework unless it gets messy
-- Persistence
-  - use file system to start
-  - SQLite is an option?
-  - Leaning towards ReadOnly
-- API Design
-  - REST
-  - GET will get pretty far
-  - CALLS
-    - services_list
-    - service_detail
-      - needs versions
-- Search
-  - start with simple such as prefix
-  - Frontend may want to send ajax calls
-  - Only name of of service? Should Description come into play? Could be a future improvement
-- Pagination
-  - offsets
-  - Funny that the designer indexes from 0, first time seeing that in my career.
-- Testing
-  - Explore, there is a built-in for go
-  - Use Insomnia to exercise API as part of development loop
-- VCS
-  - Local git first, then upload to github
-  - should this be private? .. checking for public repos with peoples attempts?
-    - yes, some public but not specifically for this takehome
-
-### Optional
-
-- Full CRUD
-  - lean to no, without DB (i.e. files) it's annoying, and not pleasant with DB
-- Tests
-  - lean to yes
-- AuthN/AuthZ
-  - at least make skeletons
-
-## API Responses
-
-Thinking requests are GETs with path and query string driving.
-
-```json
-{
-    "services": [
-        {
-            "url": "https://example.com/a_Service",
-            "versionCount": 1,
-            "description": "a blah, blah, blah",
-            "id": "1",
-            "name": "a_Service"
-        },
-
-            "url": "https://example.com/b_Service",
-            "versionCount": 2,
-            "description": "b blah, blah, blah",
-            "id": "2",
-            "name": "b_Service"
-        },
-        {
-            "url": "https://example.com/c_Service",
-            "versionCount": 3,
-            "description": "c blah, blah, blah",
-            "id": "3",
-            "name": "c_Service"
-        }
-    ]
-}
-```
-
-## Resources
-
-[The Spec](https://docs.google.com/document/d/1GcqaLwUv2MC7CmXs7ZCrTrfOwkSOiZHRLoWgLzTr9Vc/)
