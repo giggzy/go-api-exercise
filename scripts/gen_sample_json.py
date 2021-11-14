@@ -32,19 +32,16 @@ def gen_services():
                 }
             },
         """
-        current = ascii_letters[i] 
+        current = ascii_letters[i]
         name = current + "_Service"
         desc = current + " blah, blah, blah"
         version_count = i + 1
         url = "https://example.com/" + name
 
-        versions = []
-        for v in range(version_count):
-            versions.append({
+        versions = [{
                 "name": "version_" + str(v),
                 "id":   str(v)
-            })
-
+            } for v in range(version_count)]
         services["services"].append({ 
             "id": str(version_count),
             "name": name,
