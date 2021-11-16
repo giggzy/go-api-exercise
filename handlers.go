@@ -14,6 +14,8 @@ func getServices(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("getServives requested")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 
 	// When running as a test services are not yet initialized
 	loadServices()
@@ -115,6 +117,11 @@ func getServices(w http.ResponseWriter, r *http.Request) {
 
 	// write the response
 	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	json.NewEncoder(w).Encode(foundServices)
 }
 

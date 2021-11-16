@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -21,10 +22,24 @@ func main() {
 	rand.Seed(time.Now().UnixNano()) // used to generate random ids for new services
 
 	r := mux.NewRouter()
-	r.HandleFunc("/services", getServices).Methods("GET")
-	r.HandleFunc("/service_detail/{id}", getServiceDetails).Methods("GET")
-	r.HandleFunc("/service_create", createService).Methods("POST")
-	http.Handle("/", r)
+
+	handler := handlers.LoggingHandler(log.Writer(), handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),
+	)(r))
+	r.HandleFunc("/services", getServices).Methods("GET", "OPTIONS")
+	r.HandleFunc("/service_detail/{id}", getServiceDetails).Methods("GET", "OPTIONS")
+	r.HandleFunc("/service_create", createService).Methods("POST", "OPTIONS")
+	// http.Handle("/", r)
+
+	r.Use(mux.CORSMethodMiddleware(r))
+
+	newServer := &http.Server{
+		Handler: handler,
+		Addr:    ":8080",
+	}
 	log.Println("Start Web Server...")
-	http.ListenAndServe(":8080", nil)
+	/*
+		http.ListenAndServe(":8080", r)
+	*/
+	log.Fatal(newServer.ListenAndServe())
 }
